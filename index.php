@@ -38,42 +38,79 @@
         </div>
     </div>
 
-    <!-- Filters -->
-    <div class="card mb-4">
-        <div class="card-body">
-            <form method="GET">
-                <div class="row">
-                    <div class="col-md-3">
-                        <label>Year Range</label>
-                        <input type="number" name="year_from" class="form-control" value="<?= $_GET['year_from'] ?? 2015 ?>">
-                    </div>
-                    <div class="col-md-3">
-                        <label>to</label>
-                        <input type="number" name="year_to" class="form-control" value="<?= $_GET['year_to'] ?? 2024 ?>">
-                    </div>
-                    <div class="col-md-3">
-                        <label>Commodity</label>
-                        <input type="text" name="commodity" class="form-control" placeholder="e.g., Ampalaya, Cabbage">
-                    </div>
-                    <div class="col-md-3">
-                        <button class="btn btn-primary mt-4">Filter</button>
-                    </div>
-                </div>
-            </form>
-        </div>
+  <!-- UPGRADED FILTERS + EXPORT BUTTONS -->
+<div class="card mb-4">
+    <div class="card-body">
+        <form method="GET" class="row g-3">
+            <div class="col-md-3">
+                <label class="form-label">Year From</label>
+                <input type="number" name="year_from" class="form-control" value="<?= $_GET['year_from'] ?? 2015 ?>">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Year To</label>
+                <input type="number" name="year_to" class="form-control" value="<?= $_GET['year_to'] ?? 2024 ?>">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Commodity</label>
+                <input type="text" name="commodity" class="form-control" placeholder="e.g. Cabbage, Tomato" value="<?= $_GET['commodity'] ?? '' ?>">
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">Region</label>
+                <select name="region" class="form-select">
+                    <option value="">All Regions</option>
+                    <?php
+                    $regions = $pdo->query("SELECT DISTINCT geolocation FROM farmgate_prices ORDER BY geolocation")->fetchAll();
+                    foreach ($regions as $r) {
+                        $selected = ($_GET['region'] ?? '') === $r['geolocation'] ? 'selected' : '';
+                        echo "<option value=\"{$r['geolocation']}\" $selected>{$r['geolocation']}</option>";
+                    }
+                    ?>
+                </select>
+            </div>
+            <div class="col-12 text-center mt-3">
+                <button type="submit" class="btn btn-success btn-lg me-3">Apply Filter</button>
+                
+                <a href="reports/generate-pdf.php?<?= http_build_query($_GET) ?>" 
+                   class="btn btn-danger btn-lg me-3">Download PDF</a>
+                   
+                <a href="reports/export-csv.php?<?= http_build_query($_GET) ?>" 
+                   class="btn btn-primary btn-lg">Export CSV</a>
+            </div>
+        </form>
     </div>
-
-    <!-- PDF Download Button - ADD THIS -->
-<div class="text-center my-5">
-    <a href="reports/generate-pdf.php" class="btn btn-danger btn-lg px-5 py-3 shadow-lg" style="font-size: 1.3rem;">
-        📄 Download PDF Report
-    </a>
 </div>
 
     <!-- Chart -->
     <div class="card">
         <div class="card-body">
             <canvas id="priceChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- COMMODITY RANKINGS + REGIONAL COMPARISON -->
+<div class="row mt-5">
+    <!-- Top 10 Most Expensive Commodities -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h5>Top 10 Most Expensive Commodities (Latest Year)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="topCommoditiesChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <!-- Regional Average Prices -->
+    <div class="col-lg-6 mb-4">
+        <div class="card shadow">
+            <div class="card-header bg-info text-white">
+                <h5>Average Price by Region (Latest Data)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="regionalChart"></canvas>
+            </div>
         </div>
     </div>
 </div>
@@ -92,6 +129,42 @@ fetch('api-chart-data.php?<?= http_build_query($_GET) ?>')
                     data: data.prices,
                     borderColor: 'rgb(75, 192, 192)',
                     tension: 0.1
+                }]
+            },
+            options: { responsive: true }
+        });
+    });
+
+    // Top 10 Commodities
+fetch('api-top-commodities.php?<?= http_build_query($_GET) ?>')
+    .then(r => r.json())
+    .then(data => {
+        new Chart(document.getElementById('topCommoditiesChart'), {
+            type: 'bar',
+            data: {
+                labels: data.commodities,
+                datasets: [{
+                    label: 'Average Price (₱/kg)',
+                    data: data.prices,
+                    backgroundColor: 'rgba(255, 99, 132, 0.8)'
+                }]
+            },
+            options: { indexAxis: 'y', responsive: true }
+        });
+    });
+
+// Regional Comparison
+fetch('api-regional.php?<?= http_build_query($_GET) ?>')
+    .then(r => r.json())
+    .then(data => {
+        new Chart(document.getElementById('regionalChart'), {
+            type: 'bar',
+            data: {
+                labels: data.regions,
+                datasets: [{
+                    label: 'Avg Price (₱/kg)',
+                    data: data.prices,
+                    backgroundColor: 'rgba(54, 162, 235, 0.8)'
                 }]
             },
             options: { responsive: true }
