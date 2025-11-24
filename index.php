@@ -32,7 +32,7 @@
                 <p class="text-muted mb-0">Real-time PSA Agricultural Price Monitoring System</p>
             </div>
             <div class="col-auto">
-                <img src="images/psa-logo.jpg" width="80" alt="PSA Logo">
+                <img src="images/psa-logo.png" width="150" alt="PSA Logo">
             </div>
         </div>
     </div>
