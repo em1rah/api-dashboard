@@ -1,7 +1,7 @@
 <?php
 // reports/generate-pdf.php
-require_once '../db.php';                    // Go up one level to db.php
-require_once 'tcpdf/tcpdf.php';              // tcpdf folder MUST be inside reports/
+require_once '../db.php';                  
+require_once 'tcpdf/tcpdf.php';             
 
 // Prevent any output before PDF
 ob_clean();

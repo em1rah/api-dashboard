@@ -1,5 +1,5 @@
 <?php
-// fetch-data.php – FIXED VERSION – IMPORTS EVERY YEAR (2010–2025) CORRECTLY
+// fetch-data.php 
 set_time_limit(0);
 ini_set('memory_limit', '2048M');
 
@@ -40,8 +40,8 @@ function importAllYearsCorrectly($file, $type) {
 
     $lines = file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
 
-    $yearStarts = [];      // col => year (where col is start of block, i.e., January)
-    $monthMaps = [];       // year => [col => period]
+    $yearStarts = [];      
+    $monthMaps = [];       
     $geolocation = "PHILIPPINES";
     $total = 0;
 
@@ -49,10 +49,10 @@ function importAllYearsCorrectly($file, $type) {
         $row = str_getcsv($line);
         $row = array_map('trim', $row);
 
-        // Clean commodity name
+       
         if (isset($row[1])) $row[1] = trim($row[1], '"');
 
-        // === DETECT YEAR HEADER LINE ===
+       
         $isYearRow = false;
         foreach ($row as $col => $cell) {
             $cell = trim($cell);
@@ -65,11 +65,11 @@ function importAllYearsCorrectly($file, $type) {
         if ($isYearRow) {
             echo "Found years: " . implode(', ', array_values($yearStarts)) . "<br>";
 
-            // Find the next non-empty line for months
+         
             for ($i = $idx + 1; $i < count($lines); $i++) {
                 $next = str_getcsv($lines[$i]);
                 $next = array_map('trim', $next);
-                if (count(array_filter($next)) > 2) {  // Likely the month row
+                if (count(array_filter($next)) > 2) { 
                     foreach ($yearStarts as $startCol => $year) {
                         $monthMaps[$year] = [];
                         $periods = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December', 'Annual'];
@@ -90,7 +90,7 @@ function importAllYearsCorrectly($file, $type) {
             continue;
         }
 
-        // === DATA ROWS ===
+      
         if (empty($yearStarts) || empty($monthMaps)) continue;
 
         $geo = $row[0] ?? '';

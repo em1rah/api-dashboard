@@ -2,9 +2,9 @@
 // db.php - Database Connection
 
 $host = 'localhost';
-$db   = 'agri_dashboard';  // CHANGE THIS
-$user = 'root';                // CHANGE if needed
-$pass = '';                    // CHANGE if you have password
+$db   = 'agri_dashboard'; 
+$user = 'root';              
+$pass = '';                   
 $charset = 'utf8mb4';
 
 $dsn = "mysql:host=$host;dbname=$db;charset=$charset";
