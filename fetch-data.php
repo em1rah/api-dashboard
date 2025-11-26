@@ -1,5 +1,4 @@
 <?php
-// import_final_perfect.php - GUARANTEED TO IMPORT EVERY SINGLE PRICE
 ini_set('max_execution_time', 0);
 ini_set('memory_limit', '2048M');
 

@@ -1,5 +1,4 @@
 <?php
-// Your original PHP logic (unchanged - only UI simplified below)
 $pdo = new PDO("mysql:host=localhost;dbname=agri_dashboard;charset=utf8mb4", "root", "");
 $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
@@ -14,7 +13,6 @@ $regions = $pdo->query("SELECT DISTINCT name FROM regions ORDER BY name")->fetch
 $leafyAvg = $pdo->query("SELECT COALESCE(ROUND(AVG(price),2),0) FROM price_records p JOIN commodities c ON p.commodity_id=c.id WHERE c.category='leafy' AND p.year=YEAR(CURDATE()) AND p.period!='Annual' AND price>0")->fetchColumn();
 $fruitAvg = $pdo->query("SELECT COALESCE(ROUND(AVG(price),2),0) FROM price_records p JOIN commodities c ON p.commodity_id=c.id WHERE c.category='fruit_vegetable' AND p.year=YEAR(CURDATE()) AND p.period!='Annual' AND price>0")->fetchColumn();
 
-// [All your original queries below - unchanged]
 $trendSql = "SELECT p.year, c.name commodity, ROUND(AVG(p.price),2) avg_price FROM price_records p JOIN commodities c ON p.commodity_id=c.id JOIN regions r ON p.region_id=r.id WHERE p.year BETWEEN ? AND ? AND p.period!='Annual' AND p.price IS NOT NULL";
 $params = [$fromYear, $toYear];
 if ($commodity) { $trendSql .= " AND c.name=?"; $params[] = $commodity; }
@@ -46,7 +44,7 @@ foreach ($commData as $c => $prices) {
     $i++;
 }
 
-// Top 10, Regional, Rankings (same as original)
+// Top 10, Regional, Rankings 
 $topStmt = $pdo->prepare("SELECT c.name, ROUND(AVG(p.price),2) avg_price FROM price_records p JOIN commodities c ON p.commodity_id=c.id WHERE p.year BETWEEN ? AND ? AND p.period!='Annual' AND p.price>0 " . ($region!=='all' ? "AND EXISTS(SELECT 1 FROM price_records p2 JOIN regions r ON p2.region_id=r.id WHERE p2.commodity_id=p.commodity_id AND r.name=?) " : "") . "GROUP BY c.name ORDER BY avg_price DESC LIMIT 10");
 $topParams = [$fromYear, $toYear]; if($region!=='all') $topParams[] = $region;
 $topStmt->execute($topParams);
@@ -81,7 +79,7 @@ $hasData = !empty($datasets);
         .price-big { font-size:3.5rem; font-weight:800; color:#2d6a4f; }
         .filter-box { background:white; padding:1.5rem; border-radius:16px; box-shadow:0 4px 15px rgba(0,0,0,0.06); }
         
-        /* Fixed height - no stretching ever */
+       
         .chart-wrapper { position:relative; height:480px; width:100%; }
         .no-data-message { min-height: 480px; display: flex; align-items: center; justify-content: center; }
         .chart-wrapper canvas { position:absolute; top:0; left:0; width:100% !important; height:100% !important; }

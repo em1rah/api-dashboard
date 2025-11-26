@@ -9,7 +9,7 @@ if (!empty($_GET['year_from'])) {
     $where[] = "year >= ?";
     $params[] = $_GET['year_from'];
 }
-if (!empty($_GET['year_to'])) {
+if (!empty($_GET['year_to'])) {+
     $where[] = "year <= ?";
     $params[] = $_GET['year_to'];
 }
