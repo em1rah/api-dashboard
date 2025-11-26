@@ -60,6 +60,9 @@ $regionData = $regStmt->fetchAll();
 $rankStmt = $pdo->prepare("SELECT c.name commodity, ROUND(AVG(p.price),2) avg_price FROM price_records p JOIN commodities c ON p.commodity_id=c.id WHERE p.year BETWEEN ? AND ? AND p.period!='Annual' GROUP BY c.name ORDER BY avg_price DESC");
 $rankStmt->execute([$fromYear, $toYear]);
 $rankings = $rankStmt->fetchAll();
+
+// Check if we have data to display
+$hasData = !empty($datasets);
 ?>
 
 <!DOCTYPE html>
@@ -80,6 +83,7 @@ $rankings = $rankStmt->fetchAll();
         
         /* Fixed height - no stretching ever */
         .chart-wrapper { position:relative; height:480px; width:100%; }
+        .no-data-message { min-height: 480px; display: flex; align-items: center; justify-content: center; }
         .chart-wrapper canvas { position:absolute; top:0; left:0; width:100% !important; height:100% !important; }
         
         .btn-primary { background:#2d6a4f; border:none; border-radius:12px; padding:10px 24px; }
@@ -133,7 +137,7 @@ $rankings = $rankStmt->fetchAll();
             </div>
             <div class="col-md-4">
                 <label class="form-label fw-bold">Commodity</label>
-                <select name="commodity" class="form-select">
+                <select name="commodity" id="commodityFilter" class="form-select">
                     <option value="">All Commodities</option>
                     <?php foreach($commodities as $c): ?>
                         <option value="<?= htmlspecialchars($c) ?>" <?= $c==$commodity?'selected':'' ?>><?= htmlspecialchars($c) ?></option>
@@ -142,7 +146,7 @@ $rankings = $rankStmt->fetchAll();
             </div>
             <div class="col-md-2">
                 <label class="form-label fw-bold">Region</label>
-                <select name="region" class="form-select">
+                <select name="region" id="regionFilter" class="form-select">
                     <option value="all">All Regions</option>
                     <?php foreach($regions as $r): ?>
                         <option value="<?= htmlspecialchars($r) ?>" <?= $r==$region?'selected':'' ?>><?= htmlspecialchars($r) ?></option>
@@ -155,7 +159,8 @@ $rankings = $rankStmt->fetchAll();
         </form>
     </div>
 
-    <!-- Charts -->
+    <!-- Charts Section -->
+    <?php if ($hasData): ?>
     <div class="row g-4">
         <!-- Price Trend -->
         <div class="col-lg-8">
@@ -217,10 +222,28 @@ $rankings = $rankStmt->fetchAll();
         <button onclick="exportCSV()" class="btn btn-success btn-lg px-5 me-3">Export CSV</button>
         <button onclick="window.print()" class="btn btn-outline-secondary btn-lg px-5">Print</button>
     </div>
+    
+    <?php else: ?>
+    <!-- No Data Message -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm">
+                <div class="no-data-message">
+                    <div class="text-center p-5">
+                        <i class="bi bi-exclamation-triangle-fill text-warning" style="font-size: 4rem;"></i>
+                        <h3 class="mt-4 text-muted">No Available Data</h3>
+                        <p class="text-muted">No price records found for the selected filters. Try adjusting your selection.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <?php endif; ?>
 </div>
 
 <script>
 // Simple clean charts
+<?php if ($hasData): ?>
 new Chart(document.getElementById('trendChart'), {
     type: 'line',
     data: { labels: <?= json_encode($years) ?>, datasets: <?= json_encode($datasets) ?> },
@@ -255,6 +278,53 @@ function exportCSV() {
     a.download = 'farmgate_prices_<?= $fromYear ?>_<?= $toYear ?>.csv';
     a.click();
 }
+<?php endif; ?>
+
+// Dynamic filter functionality
+let isUpdating = false;
+
+function updateFilters(triggeredBy) {
+    if (isUpdating) return;
+    
+    const regionSelect = document.getElementById('regionFilter');
+    const commoditySelect = document.getElementById('commodityFilter');
+    
+    isUpdating = true;
+
+    if (triggeredBy === 'region') {
+        const region = regionSelect.value;
+        fetch(`api-filter-commodities.php?region=${encodeURIComponent(region)}`)
+            .then(r => r.json())
+            .then(data => {
+                const currentCommodity = commoditySelect.value;
+                commoditySelect.innerHTML = '<option value="">All Commodities</option>';
+                data.commodities.forEach(commodity => {
+                    const option = new Option(commodity, commodity);
+                    if (commodity === currentCommodity) option.selected = true;
+                    commoditySelect.add(option);
+                });
+                isUpdating = false;
+            });
+    } else if (triggeredBy === 'commodity') {
+        const commodity = commoditySelect.value;
+        fetch(`api-filter-regions.php?commodity=${encodeURIComponent(commodity)}`)
+            .then(r => r.json())
+            .then(data => {
+                const currentRegion = regionSelect.value;
+                regionSelect.innerHTML = '<option value="all">All Regions</option>';
+                data.regions.forEach(region => {
+                    const option = new Option(region, region);
+                    if (region === currentRegion) option.selected = true;
+                    regionSelect.add(option);
+                });
+                isUpdating = false;
+            });
+    }
+}
+
+// Add event listeners
+document.getElementById('regionFilter').addEventListener('change', () => updateFilters('region'));
+document.getElementById('commodityFilter').addEventListener('change', () => updateFilters('commodity'));
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
