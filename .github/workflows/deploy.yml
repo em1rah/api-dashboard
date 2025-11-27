@@ -1,26 +1,24 @@
+# File: .github/workflows/deploy.yml
 name: Deploy to InfinityFree
 
 on:
   push:
-    branches: [ master ]   # Change to "master" if your default branch is master
+    branches: [ master ]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
 
-      - name: Deploy via FTP
+      - name: Deploy via FTP → directly to /htdocs/
         uses: SamKirkland/FTP-Deploy-Action@v4.3.5
         with:
           server: ${{ secrets.FTP_SERVER }}
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: ${{ secrets.FTP_REMOTE_FOLDER }}
-          dangerous-clean-slate: true   # deletes everything in htdocs first (recommended)
+          server-dir: /htdocs/           # ← this is now correct
+          dangerous-clean-slate: true    # deletes everything in /htdocs/ first (recommended)
           exclude: |
             **/.git**
             **/.github/**
-            **/README.md
-            **/config.php   # ← keep this so you don’t overwrite your DB credentials
