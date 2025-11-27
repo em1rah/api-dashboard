@@ -101,7 +101,7 @@ $hasData = !empty($datasets);
 <div class="container py-5">
     <div class="text-center mb-5">
         <h1 class="display-5 fw-bold">Philippine Farmgate Prices</h1>
-        <p class="text-muted">2010 – <?= date('Y') ?> • Simple & Clear Analytics</p>
+       
     </div>
 
     <!-- Summary Cards -->
