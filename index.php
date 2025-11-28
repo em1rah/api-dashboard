@@ -201,7 +201,7 @@ $rankings = $rankStmt->fetchAll();
                 </select>
             </div>
             <div class="col-md-2">
-                <button class="btn btn-primary w-100">Update</button>
+                <button class="btn btn-primary w-100">Filter</button>
             </div>
         </form>
     </div>
