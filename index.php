@@ -1,17 +1,17 @@
 <?php
-try {
-    $pdo = new PDO(
-        "mysql:host=sql300.infinityfree.com;dbname=if0_40530383_agri_dashboard;charset=utf8mb4",
-        "if0_40530383",
-        "3x1gprkc"   // ← your real password
-    );
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
-}
+// try {
+//     $pdo = new PDO(
+//         "mysql:host=sql300.infinityfree.com;dbname=if0_40530383_agri_dashboard;charset=utf8mb4",
+//         "if0_40530383",
+//         "3x1gprkc"   // ← your real password
+//     );
+//     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+// } catch (PDOException $e) {
+//     die("Connection failed: " . $e->getMessage());
+// }
 
-// $pdo = new PDO("mysql:host=localhost;dbname=agri_dashboard;charset=utf8mb4", "root", "");
-// $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$pdo = new PDO("mysql:host=localhost;dbname=agri_dashboard;charset=utf8mb4", "root", "");
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 
 $fromYear  = max(2010, min(2025, (int)($_GET['from_year'] ?? 2010)));
@@ -134,7 +134,7 @@ $rankings = $rankStmt->fetchAll();
         h1, h4 { color:#2d6a4f; }
         .price-big { font-size:3.5rem; font-weight:800; color:#2d6a4f; }
         .filter-box { background:white; padding:1.5rem; border-radius:16px; box-shadow:0 4px 15px rgba(0,0,0,0.06); }
-        .chart-wrapper { position:relative; height:420px; width:100%; }
+        .chart-wrapper { position:relative; height:620px; width:100%; }
         .chart-wrapper canvas { position:absolute; top:0; left:0; width:100% !important; height:100% !important; }
         .btn-primary { background:#2d6a4f; border:none; }
         .btn-success { background:#1a5d3a; border:none; }
@@ -217,7 +217,7 @@ $rankings = $rankStmt->fetchAll();
             <div class="card p-4">
                 <h4>Price Trends Over Years</h4>
                 <?php if (!empty($datasets)): ?>
-                    <div class="chart-wrapper"><canvas id="priceTrendChart"></canvas></div>
+                    <div class="chart-wrapper" style="height:445px;"><canvas id="priceTrendChart"></canvas></div>
                     <div class="chart-actions text-center">
                         <button onclick="exportChartCSV('priceTrend')" class="btn btn-sm btn-success me-2">Export CSV</button>
                         <button onclick="exportChartPDF('priceTrendChart', 'Price Trends')" class="btn btn-sm btn-danger">Export PDF</button>
@@ -236,7 +236,7 @@ $rankings = $rankStmt->fetchAll();
             <div class="card p-4">
                 <h4>Market Activity Trends (No. of Records)</h4>
                 <?php if (!empty($activityData)): ?>
-                    <div class="chart-wrapper"><canvas id="activityChart"></canvas></div>
+                    <div class="chart-wrapper" style="height:450px;"><canvas id="activityChart"></canvas></div>
                     <small class="text-muted text-center d-block mt-2">Higher = more active trading/reporting</small>
                     <div class="chart-actions text-center">
                         <button onclick="exportChartCSV('activity')" class="btn btn-sm btn-success me-2">Export CSV</button>
@@ -250,8 +250,8 @@ $rankings = $rankStmt->fetchAll();
                 <?php endif; ?>
             </div>
         </div>
-
-        <!-- Top 10 Most Expensive -->
+<!-- 
+        Top 10 Most Expensive
         <div class="col-lg-6">
             <div class="card p-4">
                 <h4>Top 10 Most Expensive Commodities</h4>
@@ -268,10 +268,10 @@ $rankings = $rankStmt->fetchAll();
                     </div>
                 <?php endif; ?>
             </div>
-        </div>
+        </div> -->
 
         <!-- Regional Activity -->
-        <div class="col-lg-6">
+        <div class="">
             <div class="card p-4">
                 <h4>Regional Market Activity</h4>
                 <?php if (!empty($regionActivity)): ?>
@@ -294,7 +294,7 @@ $rankings = $rankStmt->fetchAll();
             <div class="card p-4">
                 <h4>Average Price by Region</h4>
                 <?php if (!empty($regionPrices)): ?>
-                    <div class="chart-wrapper"><canvas id="regionPriceChart"></canvas></div>
+                    <div class="chart-wrapper" style="height:445px;"><canvas id="regionPriceChart"></canvas></div>
                     <div class="chart-actions text-center">
                         <button onclick="exportChartCSV('regionalPrices')" class="btn btn-sm btn-success me-2">Export CSV</button>
                         <button onclick="exportChartPDF('regionPriceChart', 'Regional Prices')" class="btn btn-sm btn-danger">Export PDF</button>
