@@ -1,17 +1,17 @@
 <?php
-// try {
-//     $pdo = new PDO(
-//         "mysql:host=sql300.infinityfree.com;dbname=if0_40530383_agri_dashboard;charset=utf8mb4",
-//         "if0_40530383",
-//         "3x1gprkc"   // ← your real password
-//     );
-//     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-// } catch (PDOException $e) {
-//     die("Connection failed: " . $e->getMessage());
-// }
+try {
+    $pdo = new PDO(
+        "mysql:host=sql300.infinityfree.com;dbname=if0_40530383_agri_dashboard;charset=utf8mb4",
+        "if0_40530383",
+        "3x1gprkc"   // ← your real password
+    );
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+} catch (PDOException $e) {
+    die("Connection failed: " . $e->getMessage());
+}
 
-$pdo = new PDO("mysql:host=localhost;dbname=agri_dashboard;charset=utf8mb4", "root", "");
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+// $pdo = new PDO("mysql:host=localhost;dbname=agri_dashboard;charset=utf8mb4", "root", "");
+// $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
 
 $fromYear  = max(2010, min(2025, (int)($_GET['from_year'] ?? 2010)));
