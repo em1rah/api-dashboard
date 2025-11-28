@@ -1,14 +1,18 @@
 <?php
-try {
-    $pdo = new PDO(
-        "mysql:host=sql300.infinityfree.com;dbname=if0_40530383_agri_dashboard;charset=utf8mb4",
-        "if0_40530383",
-        "3x1gprkc"   // ← your real password
-    );
-    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-} catch (PDOException $e) {
-    die("Connection failed: " . $e->getMessage());
-}
+// try {
+//     $pdo = new PDO(
+//         "mysql:host=sql300.infinityfree.com;dbname=if0_40530383_agri_dashboard;charset=utf8mb4",
+//         "if0_40530383",
+//         "3x1gprkc"   // ← your real password
+//     );
+//     $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+// } catch (PDOException $e) {
+//     die("Connection failed: " . $e->getMessage());
+// }
+
+$pdo = new PDO("mysql:host=localhost;dbname=agri_dashboard;charset=utf8mb4", "root", "");
+$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+
 
 $fromYear  = max(2010, min(2025, (int)($_GET['from_year'] ?? 2010)));
 $toYear    = max($fromYear, min(2025, (int)($_GET['to_year'] ?? date('Y'))));
@@ -209,7 +213,7 @@ $rankings = $rankStmt->fetchAll();
     <!-- Charts Grid -->
     <div class="row g-4 mb-5">
         <!-- Price Trends -->
-        <div class="col-lg-6">
+        <div class="">
             <div class="card p-4">
                 <h4>Price Trends Over Years</h4>
                 <?php if (!empty($datasets)): ?>
@@ -228,7 +232,7 @@ $rankings = $rankStmt->fetchAll();
         </div>
 
         <!-- Activity Trends -->
-        <div class="col-lg-6">
+        <div class="">
             <div class="card p-4">
                 <h4>Market Activity Trends (No. of Records)</h4>
                 <?php if (!empty($activityData)): ?>
